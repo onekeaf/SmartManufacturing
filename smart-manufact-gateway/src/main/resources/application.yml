@@ -1,0 +1,74 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: smart-manufact-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: smart-manufact
+        group: DEFAULT_GROUP
+        metadata:
+          version: 1.0.0
+          region: cn-hangzhou
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # 订单服务路由
+        - id: order-service
+          uri: lb://smart-manufact-order
+          predicates:
+            - Path=/api/order/**
+          filters:
+            - StripPrefix=1
+        # 生产计划服务路由
+        - id: production-service
+          uri: lb://smart-manufact-production
+          predicates:
+            - Path=/api/production/**
+          filters:
+            - StripPrefix=1
+        # 设备监控服务路由
+        - id: equipment-service
+          uri: lb://smart-manufact-equipment
+          predicates:
+            - Path=/api/equipment/**
+          filters:
+            - StripPrefix=1
+        # 库存管理服务路由
+        - id: inventory-service
+          uri: lb://smart-manufact-inventory
+          predicates:
+            - Path=/api/inventory/**
+          filters:
+            - StripPrefix=1
+        # 质量管理服务路由
+        - id: quality-service
+          uri: lb://smart-manufact-quality
+          predicates:
+            - Path=/api/quality/**
+          filters:
+            - StripPrefix=1
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+# Sentinel 配置
+spring.cloud.sentinel:
+  transport:
+    dashboard: localhost:8858
+    port: 8719
+  eager: true
+  
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
