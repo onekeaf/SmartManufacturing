@@ -4,16 +4,31 @@ server:
 spring:
   application:
     name: smart-manufact-inventory
+  config:
+    import:
+      - optional:nacos:smart-manufact-inventory.yml
   cloud:
     nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos
       discovery:
         server-addr: 127.0.0.1:8848
         namespace: smart-manufact
         group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
         metadata:
           version: 1.0.0
           warehouse: main-warehouse
           weight: 100
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        namespace: smart-manufact
+        group: DEFAULT_GROUP
+        username: nacos
+        password: nacos
     sentinel:
       transport:
         dashboard: localhost:8858
@@ -24,7 +39,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/smart_manufact_inventory?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
     username: root
-    password: root
+    password: 123456
     druid:
       initial-size: 5
       min-idle: 5

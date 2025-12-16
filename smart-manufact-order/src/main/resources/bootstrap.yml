@@ -1,6 +1,9 @@
 spring:
   application:
     name: smart-manufact-order
+  config:
+    import:
+      - optional:nacos:smart-manufact-order.yml
   cloud:
     nacos:
       config:

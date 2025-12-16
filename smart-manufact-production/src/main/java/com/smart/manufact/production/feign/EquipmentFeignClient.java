@@ -11,5 +11,5 @@ import java.util.Map;
 public interface EquipmentFeignClient {
     
     @GetMapping("/equipment/check-availability")
-    Map<String, Object> checkEquipmentAvailability(@RequestParam String workshopCode);
+    Map<String, Object> checkEquipmentAvailability(@RequestParam("workshopCode") String workshopCode);
 }

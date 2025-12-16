@@ -1,6 +1,9 @@
 spring:
   application:
     name: smart-manufact-gateway
+  config:
+    import:
+      - optional:nacos:smart-manufact-gateway.yml
   cloud:
     nacos:
       config:

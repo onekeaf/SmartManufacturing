@@ -12,6 +12,6 @@ public interface InventoryFeignClient {
     
     @GetMapping("/inventory/check-availability")
     Map<String, Object> checkMaterialAvailability(
-            @RequestParam String vehicleModel,
-            @RequestParam Integer quantity);
+            @RequestParam("vehicleModel") String vehicleModel,
+            @RequestParam("quantity") Integer quantity);
 }

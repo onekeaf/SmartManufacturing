@@ -39,7 +39,7 @@
         <mysql.version>8.0.32</mysql.version>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
         <druid.version>1.2.16</druid.version>
-        <lombok.version>1.18.26</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <hutool.version>5.8.15</hutool.version>
         <fastjson2.version>2.0.25</fastjson2.version>
     </properties>

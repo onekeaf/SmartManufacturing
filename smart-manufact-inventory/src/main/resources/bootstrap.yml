@@ -1,6 +1,9 @@
 spring:
   application:
     name: smart-manufact-inventory
+  config:
+    import:
+      - optional:nacos:smart-manufact-inventory.yml
   cloud:
     nacos:
       config:
