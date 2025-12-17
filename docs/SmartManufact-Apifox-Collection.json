@@ -1,0 +1,1425 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "智能制造系统 API",
+    "description": "智能制造系统完整的 API 文档，包含订单、生产、设备、库存、质量管理等模块",
+    "version": "1.0.0",
+    "contact": {
+      "name": "智能制造系统",
+      "email": "support@smartmanufact.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "网关服务（推荐）"
+    },
+    {
+      "url": "http://localhost:8081",
+      "description": "订单服务直连"
+    },
+    {
+      "url": "http://localhost:8082",
+      "description": "生产计划服务直连"
+    },
+    {
+      "url": "http://localhost:8083",
+      "description": "设备监控服务直连"
+    },
+    {
+      "url": "http://localhost:8084",
+      "description": "库存管理服务直连"
+    },
+    {
+      "url": "http://localhost:8085",
+      "description": "质量管理服务直连"
+    }
+  ],
+  "tags": [
+    {
+      "name": "订单服务",
+      "description": "订单管理相关接口"
+    },
+    {
+      "name": "生产计划服务",
+      "description": "生产计划管理相关接口"
+    },
+    {
+      "name": "设备监控服务",
+      "description": "设备监控管理相关接口"
+    },
+    {
+      "name": "库存管理服务",
+      "description": "库存管理相关接口"
+    },
+    {
+      "name": "质量管理服务",
+      "description": "质量管理相关接口"
+    }
+  ],
+  "paths": {
+    "/api/order/create": {
+      "post": {
+        "tags": ["订单服务"],
+        "summary": "创建订单",
+        "description": "创建新的订单",
+        "operationId": "createOrder",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderCreateRequest"
+              },
+              "example": {
+                "customerName": "测试客户",
+                "customerType": "INDIVIDUAL",
+                "vehicleModel": "特斯拉Model3",
+                "quantity": 1,
+                "totalAmount": 299999.00,
+                "priority": 2,
+                "deliveryDate": "2025-03-01 00:00:00",
+                "remark": "测试订单"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/order/{id}": {
+      "get": {
+        "tags": ["订单服务"],
+        "summary": "根据ID查询订单",
+        "description": "根据订单ID查询订单详情",
+        "operationId": "getOrderById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "订单ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultOrderVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["订单服务"],
+        "summary": "取消订单",
+        "description": "取消指定订单",
+        "operationId": "cancelOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "订单ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/order/list": {
+      "get": {
+        "tags": ["订单服务"],
+        "summary": "查询订单列表",
+        "description": "分页查询订单列表",
+        "operationId": "getOrderList",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页数量",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "订单状态：0-待处理，1-已确认，2-生产中，3-已完成，4-已取消",
+            "schema": {
+              "type": "integer",
+              "enum": [0, 1, 2, 3, 4]
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultPageOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/order/{id}/status": {
+      "put": {
+        "tags": ["订单服务"],
+        "summary": "更新订单状态",
+        "description": "更新订单状态",
+        "operationId": "updateOrderStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "订单ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "description": "订单状态：0-待处理，1-已确认，2-生产中，3-已完成，4-已取消",
+            "schema": {
+              "type": "integer",
+              "enum": [0, 1, 2, 3, 4]
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/order/{id}/trigger-production": {
+      "post": {
+        "tags": ["订单服务"],
+        "summary": "触发生产",
+        "description": "触发订单生产计划",
+        "operationId": "triggerProduction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "订单ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultOrderVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/production/plan/create": {
+      "post": {
+        "tags": ["生产计划服务"],
+        "summary": "创建生产计划",
+        "description": "创建新的生产计划",
+        "operationId": "createProductionPlan",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              },
+              "example": {
+                "orderId": 1,
+                "orderNo": "ORD202501010001",
+                "vehicleModel": "特斯拉Model3",
+                "quantity": 1,
+                "priority": 2,
+                "workshopCode": "WORKSHOP-01",
+                "planStartTime": "2025-01-20 08:00:00",
+                "planEndTime": "2025-01-27 18:00:00"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/production/plan/{planId}": {
+      "get": {
+        "tags": ["生产计划服务"],
+        "summary": "根据计划ID查询",
+        "description": "根据生产计划ID查询详情",
+        "operationId": "getPlanById",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "description": "生产计划ID",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PLAN-20250101001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/production/plan/{planId}/status": {
+      "put": {
+        "tags": ["生产计划服务"],
+        "summary": "更新计划状态",
+        "description": "更新生产计划状态",
+        "operationId": "updatePlanStatus",
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "description": "生产计划ID",
+            "schema": {
+              "type": "string"
+            },
+            "example": "PLAN-20250101001"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "description": "计划状态：1-待开始，2-进行中，3-已完成，4-已暂停",
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4]
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/equipment/{id}": {
+      "get": {
+        "tags": ["设备监控服务"],
+        "summary": "根据ID查询设备",
+        "description": "根据设备ID查询设备信息",
+        "operationId": "getEquipmentById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "设备ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultEquipment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/equipment/code/{equipmentCode}": {
+      "get": {
+        "tags": ["设备监控服务"],
+        "summary": "根据设备编号查询",
+        "description": "根据设备编号查询设备信息（带Sentinel限流）",
+        "operationId": "getEquipmentByCode",
+        "parameters": [
+          {
+            "name": "equipmentCode",
+            "in": "path",
+            "required": true,
+            "description": "设备编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "EQ-STAMP-001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultEquipment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/equipment/list": {
+      "get": {
+        "tags": ["设备监控服务"],
+        "summary": "查询设备列表",
+        "description": "查询设备列表",
+        "operationId": "getEquipmentList",
+        "parameters": [
+          {
+            "name": "workshopCode",
+            "in": "query",
+            "description": "车间编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "WORKSHOP-01"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "设备状态：1-运行中，2-空闲，3-维护中，4-故障，5-离线",
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4, 5]
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListEquipment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/equipment/check-availability": {
+      "get": {
+        "tags": ["设备监控服务"],
+        "summary": "检查设备可用性",
+        "description": "检查车间设备可用性",
+        "operationId": "checkEquipmentAvailability",
+        "parameters": [
+          {
+            "name": "workshopCode",
+            "in": "query",
+            "required": true,
+            "description": "车间编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "WORKSHOP-01"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/equipment/{equipmentCode}/status": {
+      "put": {
+        "tags": ["设备监控服务"],
+        "summary": "更新设备状态",
+        "description": "更新设备状态",
+        "operationId": "updateEquipmentStatus",
+        "parameters": [
+          {
+            "name": "equipmentCode",
+            "in": "path",
+            "required": true,
+            "description": "设备编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "EQ-STAMP-001"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "description": "设备状态：1-运行中，2-空闲，3-维护中，4-故障，5-离线",
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3, 4, 5]
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultEquipment"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/equipment/statistics": {
+      "get": {
+        "tags": ["设备监控服务"],
+        "summary": "获取设备统计信息",
+        "description": "获取设备统计信息",
+        "operationId": "getEquipmentStatistics",
+        "parameters": [
+          {
+            "name": "workshopCode",
+            "in": "query",
+            "description": "车间编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "WORKSHOP-01"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/{id}": {
+      "get": {
+        "tags": ["库存管理服务"],
+        "summary": "根据ID查询库存",
+        "description": "根据库存ID查询库存信息",
+        "operationId": "getInventoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "库存ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultInventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/material/{materialCode}": {
+      "get": {
+        "tags": ["库存管理服务"],
+        "summary": "根据物料编号查询",
+        "description": "根据物料编号查询库存信息",
+        "operationId": "getInventoryByMaterialCode",
+        "parameters": [
+          {
+            "name": "materialCode",
+            "in": "path",
+            "required": true,
+            "description": "物料编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "MAT-STEEL-001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultInventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/list": {
+      "get": {
+        "tags": ["库存管理服务"],
+        "summary": "查询库存列表",
+        "description": "查询库存列表",
+        "operationId": "getInventoryList",
+        "parameters": [
+          {
+            "name": "materialType",
+            "in": "query",
+            "description": "物料类型：RAW_MATERIAL-原材料，SEMI_FINISHED-半成品，FINISHED-成品",
+            "schema": {
+              "type": "string",
+              "enum": ["RAW_MATERIAL", "SEMI_FINISHED", "FINISHED"]
+            },
+            "example": "RAW_MATERIAL"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListInventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/check-availability": {
+      "get": {
+        "tags": ["库存管理服务"],
+        "summary": "检查物料可用性",
+        "description": "检查物料可用性",
+        "operationId": "checkMaterialAvailability",
+        "parameters": [
+          {
+            "name": "vehicleModel",
+            "in": "query",
+            "required": true,
+            "description": "车型",
+            "schema": {
+              "type": "string"
+            },
+            "example": "特斯拉Model3"
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "required": true,
+            "description": "数量",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/{materialCode}/quantity": {
+      "put": {
+        "tags": ["库存管理服务"],
+        "summary": "更新库存数量",
+        "description": "更新库存数量",
+        "operationId": "updateInventoryQuantity",
+        "parameters": [
+          {
+            "name": "materialCode",
+            "in": "path",
+            "required": true,
+            "description": "物料编号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "MAT-STEEL-001"
+          },
+          {
+            "name": "quantity",
+            "in": "query",
+            "required": true,
+            "description": "库存数量",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 45000
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultInventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/inventory/low-stock": {
+      "get": {
+        "tags": ["库存管理服务"],
+        "summary": "查询低库存物料",
+        "description": "查询低于安全库存的物料列表",
+        "operationId": "getLowStockInventory",
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListInventory"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quality/inspection/create": {
+      "post": {
+        "tags": ["质量管理服务"],
+        "summary": "创建质检记录",
+        "description": "创建新的质检记录",
+        "operationId": "createInspection",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualityInspectionRequest"
+              },
+              "example": {
+                "orderId": 1,
+                "orderNo": "ORD202501010001",
+                "productionPlanId": "PLAN-20250101001",
+                "inspectionType": "STAMPING",
+                "inspectionStage": "IPQC",
+                "inspectorName": "质检员-测试",
+                "qualityScore": 95.5,
+                "remark": "测试质检记录"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultQualityInspection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quality/inspection/{id}": {
+      "get": {
+        "tags": ["质量管理服务"],
+        "summary": "根据ID查询质检记录",
+        "description": "根据质检记录ID查询详情",
+        "operationId": "getInspectionById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "质检记录ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultQualityInspection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quality/inspection/no/{inspectionNo}": {
+      "get": {
+        "tags": ["质量管理服务"],
+        "summary": "根据检验单号查询",
+        "description": "根据检验单号查询质检记录",
+        "operationId": "getInspectionByNo",
+        "parameters": [
+          {
+            "name": "inspectionNo",
+            "in": "path",
+            "required": true,
+            "description": "检验单号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "QI20250101001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultQualityInspection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quality/inspection/list": {
+      "get": {
+        "tags": ["质量管理服务"],
+        "summary": "查询质检记录列表",
+        "description": "查询质检记录列表",
+        "operationId": "getInspectionList",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "query",
+            "description": "订单ID",
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "example": 1
+          },
+          {
+            "name": "inspectionType",
+            "in": "query",
+            "description": "检验类型：STAMPING-冲压件检验，WELDING-焊接质量，PAINTING-涂装厚度，ROAD_TEST-整车路试",
+            "schema": {
+              "type": "string",
+              "enum": ["STAMPING", "WELDING", "PAINTING", "ROAD_TEST"]
+            },
+            "example": "STAMPING"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListQualityInspection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quality/inspection/{inspectionNo}/status": {
+      "put": {
+        "tags": ["质量管理服务"],
+        "summary": "更新质检状态",
+        "description": "更新质检状态",
+        "operationId": "updateInspectionStatus",
+        "parameters": [
+          {
+            "name": "inspectionNo",
+            "in": "path",
+            "required": true,
+            "description": "检验单号",
+            "schema": {
+              "type": "string"
+            },
+            "example": "QI20250101001"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": true,
+            "description": "质检状态：1-待检验，2-合格，3-不合格",
+            "schema": {
+              "type": "integer",
+              "enum": [1, 2, 3]
+            },
+            "example": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultQualityInspection"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quality/inspection/statistics": {
+      "get": {
+        "tags": ["质量管理服务"],
+        "summary": "获取质量统计信息",
+        "description": "获取质量统计信息",
+        "operationId": "getQualityStatistics",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "description": "开始日期",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2025-01-01"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "description": "结束日期",
+            "schema": {
+              "type": "string"
+            },
+            "example": "2025-12-31"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Result"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Result": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "状态码"
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息"
+          },
+          "data": {
+            "type": "object",
+            "description": "返回数据"
+          },
+          "timestamp": {
+            "type": "string",
+            "description": "响应时间戳"
+          }
+        }
+      },
+      "ResultOrderVO": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/OrderVO"
+              }
+            }
+          }
+        ]
+      },
+      "ResultPageOrderVO": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "records": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/OrderVO"
+                    }
+                  },
+                  "total": {
+                    "type": "integer"
+                  },
+                  "size": {
+                    "type": "integer"
+                  },
+                  "current": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ResultEquipment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/Equipment"
+              }
+            }
+          }
+        ]
+      },
+      "ResultListEquipment": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Equipment"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ResultInventory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/Inventory"
+              }
+            }
+          }
+        ]
+      },
+      "ResultListInventory": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Inventory"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ResultQualityInspection": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "$ref": "#/components/schemas/QualityInspection"
+              }
+            }
+          }
+        ]
+      },
+      "ResultListQualityInspection": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Result"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/QualityInspection"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "OrderCreateRequest": {
+        "type": "object",
+        "required": ["customerName", "customerType", "vehicleModel", "quantity"],
+        "properties": {
+          "customerName": {
+            "type": "string",
+            "description": "客户名称"
+          },
+          "customerType": {
+            "type": "string",
+            "enum": ["INDIVIDUAL", "DEALER"],
+            "description": "客户类型：INDIVIDUAL-个人，DEALER-经销商"
+          },
+          "vehicleModel": {
+            "type": "string",
+            "description": "车型"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "数量"
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "double",
+            "description": "总金额"
+          },
+          "priority": {
+            "type": "integer",
+            "description": "优先级：1-低，2-普通，3-高，4-紧急"
+          },
+          "deliveryDate": {
+            "type": "string",
+            "description": "交付日期"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          }
+        }
+      },
+      "OrderVO": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "orderNo": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "customerType": {
+            "type": "string"
+          },
+          "vehicleModel": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "double"
+          },
+          "priority": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "deliveryDate": {
+            "type": "string"
+          },
+          "createTime": {
+            "type": "string"
+          }
+        }
+      },
+      "Equipment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "equipmentCode": {
+            "type": "string"
+          },
+          "equipmentName": {
+            "type": "string"
+          },
+          "equipmentType": {
+            "type": "string"
+          },
+          "workshopCode": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "oee": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "Inventory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "materialCode": {
+            "type": "string"
+          },
+          "materialName": {
+            "type": "string"
+          },
+          "materialType": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "safetyStock": {
+            "type": "integer"
+          },
+          "warehouseLocation": {
+            "type": "string"
+          }
+        }
+      },
+      "QualityInspectionRequest": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "orderNo": {
+            "type": "string"
+          },
+          "productionPlanId": {
+            "type": "string"
+          },
+          "inspectionType": {
+            "type": "string",
+            "enum": ["STAMPING", "WELDING", "PAINTING", "ROAD_TEST"]
+          },
+          "inspectionStage": {
+            "type": "string",
+            "enum": ["IQC", "IPQC", "FQC", "OQC"]
+          },
+          "inspectorName": {
+            "type": "string"
+          },
+          "qualityScore": {
+            "type": "number",
+            "format": "double"
+          },
+          "remark": {
+            "type": "string"
+          }
+        }
+      },
+      "QualityInspection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "inspectionNo": {
+            "type": "string"
+          },
+          "orderId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "orderNo": {
+            "type": "string"
+          },
+          "inspectionType": {
+            "type": "string"
+          },
+          "inspectionStage": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "qualityScore": {
+            "type": "number",
+            "format": "double"
+          },
+          "inspectorName": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
