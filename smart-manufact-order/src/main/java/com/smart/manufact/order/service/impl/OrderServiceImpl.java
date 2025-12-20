@@ -139,7 +139,23 @@ public class OrderServiceImpl implements OrderService {
         productionRequest.put("deliveryDate", order.getDeliveryDate());
         
         try {
-            Map<String, Object> result = productionFeignClient.createProductionPlan(productionRequest);
+            Map<String, Object> resultWrapper = productionFeignClient.createProductionPlan(productionRequest);
+            
+            // 检查Feign调用是否成功
+            if (resultWrapper == null) {
+                throw new BusinessException("调用生产计划服务失败：服务无响应");
+            }
+            
+            // 从Result对象中提取实际的数据
+            Map<String, Object> result = (Map<String, Object>) resultWrapper.get("data");
+            if (result == null) {
+                String errorMessage = "调用生产计划服务失败：返回数据为空";
+                if (resultWrapper.containsKey("message")) {
+                    errorMessage = (String) resultWrapper.get("message");
+                }
+                throw new BusinessException(errorMessage);
+            }
+            
             String planId = (String) result.get("planId");
             
             order.setProductionPlanId(planId);
@@ -151,6 +167,9 @@ public class OrderServiceImpl implements OrderService {
             
         } catch (Exception e) {
             log.error("调用生产计划服务失败", e);
+            if (e instanceof BusinessException) {
+                throw e;
+            }
             throw new BusinessException("触发生产失败：" + e.getMessage());
         }
         

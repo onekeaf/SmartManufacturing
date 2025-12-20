@@ -35,19 +35,73 @@ public class ProductionPlanServiceImpl implements ProductionPlanService {
         
         log.info("开始创建生产计划，车型：{}，数量：{}", vehicleModel, quantity);
         
-        Map<String, Object> inventoryCheck = inventoryFeignClient.checkMaterialAvailability(vehicleModel, quantity);
-        Boolean inventoryAvailable = (Boolean) inventoryCheck.get("available");
-        
-        if (!inventoryAvailable) {
-            throw new BusinessException("物料库存不足，无法创建生产计划");
+        try {
+            // 调用库存服务检查物料可用性
+            Map<String, Object> inventoryCheckResult = inventoryFeignClient.checkMaterialAvailability(vehicleModel, quantity);
+            
+            // 检查Feign调用是否成功
+            if (inventoryCheckResult == null) {
+                throw new BusinessException("调用库存服务失败：服务无响应");
+            }
+            
+            // 从Result对象中提取实际的数据
+            Map<String, Object> inventoryCheck = (Map<String, Object>) inventoryCheckResult.get("data");
+            if (inventoryCheck == null) {
+                throw new BusinessException("调用库存服务失败：返回数据为空");
+            }
+            
+            // 获取可用性检查结果
+            Boolean inventoryAvailable = (Boolean) inventoryCheck.get("available");
+            
+            // 检查物料是否充足
+            if (inventoryAvailable == null || !inventoryAvailable) {
+                String errorMessage = "物料库存不足，无法创建生产计划";
+                if (inventoryCheck.containsKey("message")) {
+                    errorMessage = (String) inventoryCheck.get("message");
+                }
+                throw new BusinessException(errorMessage);
+            }
+        } catch (Exception e) {
+            log.error("调用库存服务检查物料可用性失败", e);
+            if (e instanceof BusinessException) {
+                throw e;
+            }
+            throw new BusinessException("调用库存服务失败：" + e.getMessage());
         }
         
-        String workshopCode = "WORKSHOP-01";
-        Map<String, Object> equipmentCheck = equipmentFeignClient.checkEquipmentAvailability(workshopCode);
-        Boolean equipmentAvailable = (Boolean) equipmentCheck.get("available");
-        
-        if (!equipmentAvailable) {
-            throw new BusinessException("设备不可用，无法创建生产计划");
+        try {
+            String workshopCode = "WORKSHOP-01";
+            // 调用设备服务检查设备可用性
+            Map<String, Object> equipmentCheckResult = equipmentFeignClient.checkEquipmentAvailability(workshopCode);
+            
+            // 检查Feign调用是否成功
+            if (equipmentCheckResult == null) {
+                throw new BusinessException("调用设备服务失败：服务无响应");
+            }
+            
+            // 从Result对象中提取实际的数据
+            Map<String, Object> equipmentCheck = (Map<String, Object>) equipmentCheckResult.get("data");
+            if (equipmentCheck == null) {
+                throw new BusinessException("调用设备服务失败：返回数据为空");
+            }
+            
+            // 获取可用性检查结果
+            Boolean equipmentAvailable = (Boolean) equipmentCheck.get("available");
+            
+            // 检查设备是否可用
+            if (equipmentAvailable == null || !equipmentAvailable) {
+                String errorMessage = "设备不可用，无法创建生产计划";
+                if (equipmentCheck.containsKey("message")) {
+                    errorMessage = (String) equipmentCheck.get("message");
+                }
+                throw new BusinessException(errorMessage);
+            }
+        } catch (Exception e) {
+            log.error("调用设备服务检查设备可用性失败", e);
+            if (e instanceof BusinessException) {
+                throw e;
+            }
+            throw new BusinessException("调用设备服务失败：" + e.getMessage());
         }
         
         ProductionPlan plan = new ProductionPlan();
@@ -58,7 +112,7 @@ public class ProductionPlanServiceImpl implements ProductionPlanService {
         plan.setQuantity(quantity);
         plan.setPriority(priority);
         plan.setStatus(1);
-        plan.setWorkshopCode(workshopCode);
+        plan.setWorkshopCode("WORKSHOP-01");
         plan.setPlanStartTime(LocalDateTime.now());
         plan.setPlanEndTime(LocalDateTime.now().plusDays(7));
         plan.setCompletedQuantity(0);

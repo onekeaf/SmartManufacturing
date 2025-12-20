@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8090
 
 spring:
   application:
@@ -20,7 +20,9 @@ spring:
         password: nacos
         metadata:
           version: 1.0.0
-          region: cn-hangzhou
+          region: CN-HANGZHOU
+          weight: 100
+          service-type: api-gateway
       config:
         server-addr: 127.0.0.1:8848
         file-extension: yml

@@ -4,10 +4,12 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import java.util.Properties;
 
 @EnableDiscoveryClient
+@EnableFeignClients
 @MapperScan("com.smart.manufact.equipment.mapper")
 @SpringBootApplication(scanBasePackages = {"com.smart.manufact.equipment", "com.smart.manufact.common"})
 public class EquipmentApplication {

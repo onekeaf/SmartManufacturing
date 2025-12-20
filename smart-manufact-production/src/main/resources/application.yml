@@ -20,8 +20,9 @@ spring:
         password: nacos
         metadata:
           version: 1.0.0
-          workshop: workshop-all
+          workshop: WORKSHOP-ALL
           weight: 100
+          service-type: production-planning
       config:
         server-addr: 127.0.0.1:8848
         file-extension: yml
@@ -55,3 +56,16 @@ mybatis-plus:
 logging:
   level:
     com.smart.manufact.production: DEBUG
+
+# Feign 配置
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+  compression:
+    request:
+      enabled: true
+    response:
+      enabled: true

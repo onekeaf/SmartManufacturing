@@ -1,14 +1,5 @@
 # API 接口文档
 
-## 📋 目录
-- [接口规范](#接口规范)
-- [订单管理服务 API](#订单管理服务-api)
-- [生产计划服务 API](#生产计划服务-api)
-- [设备监控服务 API](#设备监控服务-api)
-- [库存管理服务 API](#库存管理服务-api)
-- [质量管理服务 API](#质量管理服务-api)
-- [错误码说明](#错误码说明)
-
 ---
 
 ## 接口规范
@@ -48,6 +39,7 @@
 **接口地址：** `POST /api/order/create`
 
 **请求参数：**
+
 ```json
 {
   "customerName": "张三",
@@ -91,7 +83,11 @@
 }
 ```
 
+![image-20251220112707768](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220112707768.png)
+
 ---
+
+
 
 ### 2. 查询订单详情
 
@@ -127,7 +123,11 @@
 }
 ```
 
+![image-20251220112807880](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220112807880.png)
+
 ---
+
+
 
 ### 3. 订单列表查询
 
@@ -165,7 +165,11 @@
 }
 ```
 
+![image-20251220113843993](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220113843993.png)
+
 ---
+
+
 
 ### 4. 更新订单状态
 
@@ -195,7 +199,11 @@
 }
 ```
 
+![image-20251220114028422](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220114028422.png)
+
 ---
+
+
 
 ### 5. 取消订单
 
@@ -207,12 +215,15 @@
 | id | Long | 是 | 订单ID |
 
 **响应示例：**
+
 ```json
 {
   "code": 200,
   "message": "订单取消成功"
 }
 ```
+
+![image-20251220114619333](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220114619333.png)
 
 ---
 
@@ -238,9 +249,13 @@
     "statusDesc": "生产中"
   }
 }
+
+
 ```
 
 ---
+
+![image-20251220114142439](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220114142439.png)
 
 ## 生产计划服务 API
 
@@ -272,6 +287,8 @@
   }
 }
 ```
+
+![image-20251220165553778](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220165553778.png)
 
 ---
 
@@ -306,21 +323,11 @@
 }
 ```
 
----
-
-### 3. 生产计划列表
-
-**接口地址：** `GET /api/production/plan/list`
-
-**请求参数：**
-| 参数 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| page | Integer | 否 | 页码 |
-| size | Integer | 否 | 每页数量 |
+![image-20251220165640519](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220165640519.png)
 
 ---
 
-### 4. 更新计划状态
+### 3. 更新计划状态
 
 **接口地址：** `PUT /api/production/plan/{planId}/status`
 
@@ -328,6 +335,8 @@
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
 | status | Integer | 是 | 状态：1-待开始，2-进行中，3-已完成，4-已暂停 |
+
+![image-20251220165912756](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220165912756.png)
 
 ---
 
@@ -357,6 +366,8 @@
 }
 ```
 
+![image-20251220165951880](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220165951880.png)
+
 ---
 
 ### 2. 查询设备详情
@@ -368,27 +379,15 @@
 |------|------|------|------|
 | id | Long | 是 | 设备ID |
 
+![image-20251220170014210](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170014210.png)
+
 ---
 
-### 3. 查询设备状态
+### 3. 获取设备统计信息
 
-**接口地址：** `GET /api/equipment/{id}/status`
+**接口地址：** `GET /api/equipment/statistics`
 
-**响应示例：**
-```json
-{
-  "code": 200,
-  "message": "success",
-  "data": {
-    "equipmentCode": "EQ-STAMP-001",
-    "status": 2,
-    "statusDesc": "空闲",
-    "oee": 85.50,
-    "runningHours": 1200,
-    "currentTask": null
-  }
-}
-```
+![image-20251220170249715](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170249715.png)
 
 ---
 
@@ -404,6 +403,7 @@
 ```
 
 **响应示例：**
+
 ```json
 {
   "code": 200,
@@ -415,6 +415,8 @@
   }
 }
 ```
+
+![image-20251220170150068](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170150068.png)
 
 ---
 
@@ -443,19 +445,22 @@
 }
 ```
 
+![image-20251220170310950](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170310950.png)
+
 ---
 
 ### 2. 查询库存详情
 
-**接口地址：** `GET /api/inventory/{id}`
+**接口地址：** `GET /api/inventory/{id}`![image-20251220170357362](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170357362.png)
 
 ---
 
 ### 3. 检查物料可用性
 
-**接口地址：** `POST /api/inventory/check`
+**接口地址：** `POST /api/inventory/check-availability`
 
 **请求参数：**
+
 ```json
 {
   "vehicleModel": "特斯拉Model3",
@@ -474,6 +479,8 @@
   }
 }
 ```
+
+![image-20251220170500671](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170500671.png)
 
 ---
 
@@ -505,11 +512,15 @@
 }
 ```
 
+![image-20251220170521249](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170521249.png)
+
 ---
 
 ### 2. 查询检验详情
 
 **接口地址：** `GET /api/quality/inspection/{id}`
+
+![image-20251220170550583](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170550583.png)
 
 ---
 
@@ -531,6 +542,8 @@
 }
 ```
 
+![image-20251220170610056](D:\JAVA\Codes\SmartManufacturing\docs\API.assets\image-20251220170610056.png)
+
 ---
 
 ## 错误码说明
@@ -546,44 +559,7 @@
 | 4001 | 库存不足 | 补充库存 |
 | 5001 | 质量检验记录不存在 | 检查记录ID |
 
----
-
-## 测试用例
-
-### 完整业务流程测试
-
-```bash
-# 1. 创建订单
-curl -X POST http://localhost:8080/api/order/create \
-  -H "Content-Type: application/json" \
-  -d '{
-    "customerName": "测试客户",
-    "customerType": "INDIVIDUAL",
-    "vehicleModel": "特斯拉Model3",
-    "quantity": 1,
-    "totalAmount": 299999,
-    "priority": 2,
-    "deliveryDate": "2025-02-01T00:00:00"
-  }'
-
-# 2. 确认订单
-curl -X PUT "http://localhost:8080/api/order/1/status?status=1"
-
-# 3. 触发生产
-curl -X POST http://localhost:8080/api/order/1/trigger-production
-
-# 4. 查询生产计划
-curl http://localhost:8080/api/production/plan/PLAN-20250101001
-
-# 5. 查询设备状态
-curl http://localhost:8080/api/equipment/list
-
-# 6. 查询库存
-curl http://localhost:8080/api/inventory/list
-
-# 7. 查询质量检验
-curl http://localhost:8080/api/quality/inspection/list
-```
+## 
 
 ---
 
@@ -593,10 +569,4 @@ curl http://localhost:8080/api/quality/inspection/list
 2. 金额字段保留两位小数
 3. 分页查询默认每页10条记录
 4. 所有接口支持跨域访问
-5. 建议使用 HTTPS 协议（生产环境）
 
----
-
-**文档版本：** v1.0.0  
-**更新时间：** 2025-01-01  
-**维护人员：** 智能制造系统开发团队
